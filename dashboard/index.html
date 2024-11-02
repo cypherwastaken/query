@@ -3,31 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Query Dashboard</title>
+    <title>Discord Bot Control Panel</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Query Control Panel</h1>
-    <div id="command-form">
-        <label for="session-id">Session ID:</label>
-        <input type="text" id="session-id" required>
-        
-        <label for="command">Command:</label>
-        <select id="command">
-            <option value="LeaveServer">Leave Server</option>
-            <option value="GlobalMessage">Global Message</option>
-            <option value="DMUsers">DM Users</option>
-            <option value="SetStatus">Set Status</option>
-            <option value="Disappear">Disappear</option>
-            <option value="Resurrect">Resurrect</option>
-        </select>
+    <div class="container">
+        <h1>Discord Bot Control Panel</h1>
+        <div id="command-form">
+            <label for="session-id">Session ID:</label>
+            <input type="text" id="session-id" placeholder="Enter Session ID" required>
+            
+            <label for="command">Command:</label>
+            <select id="command">
+                <option value="LeaveServer">Leave Server</option>
+                <option value="GlobalMessage">Global Message</option>
+                <option value="DMUsers">DM Users</option>
+                <option value="SetStatus">Set Status</option>
+                <option value="Disappear">Disappear</option>
+                <option value="Resurrect">Resurrect</option>
+            </select>
 
-        <label for="args">Arguments (JSON):</label>
-        <textarea id="args" rows="4" required></textarea>
+            <label for="args">Arguments (JSON):</label>
+            <textarea id="args" rows="4" placeholder='{"serverid": "123456789", "message": "Hello!"}' required></textarea>
 
-        <button onclick="sendCommand()">Send Command</button>
+            <button id="send-button">Send Command</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById('send-button').addEventListener('click', function() {
+            const sessionId = document.getElementById('session-id').value;
+            const command = document.getElementById('command').value;
+            const args = document.getElementById('args').value;
+
+            fetch('/send_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    session_id: sessionId,
+                    command: command,
+                    args: args
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert("Command sent successfully!");
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("Error sending command.");
+            });
+        });
+    </script>
 </body>
 </html>
